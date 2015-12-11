@@ -16,7 +16,7 @@ showErrorsModule.directive 'showErrors',
       showSuccess
 
     linkFn = (scope, el, attrs, formCtrl) ->
-      blurred = false
+      show = false 
       options = scope.$eval attrs.showErrors
       showSuccess = getShowSuccess options
       trigger = getTrigger options
@@ -27,17 +27,18 @@ showErrorsModule.directive 'showErrors',
       unless inputName
         throw "show-errors element has no child input elements with a 'name' attribute and a 'form-control' class"
 
-      inputNgEl.bind trigger, ->
-        blurred = true
-        toggleClasses formCtrl[inputName].$invalid
+      #inputNgEl.bind trigger, ->
+      #  blurred = true
+      #  toggleClasses formCtrl[inputName].$invalid
 
       scope.$watch ->
         formCtrl[inputName] && formCtrl[inputName].$invalid
       , (invalid) ->
-        return if !blurred
+        return if !show
         toggleClasses invalid
 
       scope.$on 'show-errors-check-validity', ->
+        show = true
         toggleClasses formCtrl[inputName].$invalid
 
       scope.$on 'show-errors-reset', ->
@@ -45,7 +46,7 @@ showErrorsModule.directive 'showErrors',
           # want to run this after the current digest cycle
           el.removeClass 'has-error'
           el.removeClass 'has-success'
-          blurred = false
+          show = false
         , 0, false
 
       toggleClasses = (invalid) ->

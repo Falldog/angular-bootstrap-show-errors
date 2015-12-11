@@ -23,8 +23,8 @@
         return showSuccess;
       };
       linkFn = function(scope, el, attrs, formCtrl) {
-        var blurred, inputEl, inputName, inputNgEl, options, showSuccess, toggleClasses, trigger;
-        blurred = false;
+        var inputEl, inputName, inputNgEl, options, show, showSuccess, toggleClasses, trigger;
+        show = false;
         options = scope.$eval(attrs.showErrors);
         showSuccess = getShowSuccess(options);
         trigger = getTrigger(options);
@@ -34,26 +34,23 @@
         if (!inputName) {
           throw "show-errors element has no child input elements with a 'name' attribute and a 'form-control' class";
         }
-        inputNgEl.bind(trigger, function() {
-          blurred = true;
-          return toggleClasses(formCtrl[inputName].$invalid);
-        });
         scope.$watch(function() {
           return formCtrl[inputName] && formCtrl[inputName].$invalid;
         }, function(invalid) {
-          if (!blurred) {
+          if (!show) {
             return;
           }
           return toggleClasses(invalid);
         });
         scope.$on('show-errors-check-validity', function() {
+          show = true;
           return toggleClasses(formCtrl[inputName].$invalid);
         });
         scope.$on('show-errors-reset', function() {
           return $timeout(function() {
             el.removeClass('has-error');
             el.removeClass('has-success');
-            return blurred = false;
+            return show = false;
           }, 0, false);
         });
         return toggleClasses = function(invalid) {
